@@ -9,6 +9,7 @@ export default function Home() {
   const [authenticated, setAuthenticated] = useState(false); // Track if the user is authenticated
   const [password, setPassword] = useState(""); // Track the entered password
   const [error, setError] = useState(""); // Track authentication errors
+  const [recognizing, setRecognizing] = useState(false); // Track voice recognition status
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +19,33 @@ export default function Home() {
     } else {
       setError("Fel lösenord. Försök igen."); // Incorrect password message
     }
+  };
+
+  const handleVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Din webbläsare stöder inte röstinmatning.");
+      return;
+    }
+
+    const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.lang = "sv-SE"; // Set language to Swedish
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    recognition.onstart = () => setRecognizing(true);
+    recognition.onend = () => setRecognizing(false);
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setChatInput(transcript); // Update chatInput with recognized text
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setRecognizing(false);
+    };
+
+    recognition.start();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,20 +138,32 @@ export default function Home() {
         onSubmit={handleSubmit}
         className="w-full max-w-md flex flex-col gap-4"
       >
-        <input
-          type="text"
-          value={chatInput}
-          onChange={(e) => setChatInput(e.target.value)}
-          placeholder="Skriv din fråga om Consid här..."
-          className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          style={{
-            backgroundColor: "#FFFFFF",
-            color: "#001E47",
-            borderColor: "#005BAC",
-          }}
-          required
-          disabled={loading}
-        />
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Skriv din fråga om Consid här..."
+            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{
+              backgroundColor: "#FFFFFF",
+              color: "#001E47",
+              borderColor: "#005BAC",
+            }}
+            required
+            disabled={loading}
+          />
+          <button
+            type="button"
+            onClick={handleVoiceInput}
+            className={`p-3 rounded bg-blue-500 text-white hover:bg-blue-600 transition ${
+              recognizing ? "bg-gray-400 cursor-not-allowed" : ""
+            }`}
+            disabled={recognizing}
+          >
+            🎤
+          </button>
+        </div>
         <button
           type="submit"
           className={`w-full py-2 rounded transition ${
