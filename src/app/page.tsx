@@ -5,9 +5,11 @@ import Image from "next/image";
 export default function Home() {
   const [chatInput, setChatInput] = useState("");
   const [response, setResponse] = useState("");
+  const [loading, setLoading] = useState(false); // State to track loading status
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when the request starts
 
     try {
       const res = await fetch(
@@ -30,6 +32,8 @@ export default function Home() {
       }
     } catch {
       setResponse("Error: Something went wrong.");
+    } finally {
+      setLoading(false); // Set loading to false when the request completes
     }
   };
 
@@ -72,20 +76,23 @@ export default function Home() {
             borderColor: "#005BAC",
           }}
           required
+          disabled={loading} // Disable input while loading
         />
         <button
           type="submit"
-          className="w-full py-2 rounded transition"
+          className={`w-full py-2 rounded transition ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+          }`}
           style={{
-            backgroundColor: "#005BAC",
             color: "#FFFFFF",
           }}
+          disabled={loading} // Disable button while loading
         >
-          Skicka
+          {loading ? "Skickar..." : "Skicka"}
         </button>
       </form>
       <div
-        className="mt-8 w-3/4 p-4 rounded" // Adjusted width to 75% of the screen
+        className="mt-8 w-3/4 p-4 rounded"
         style={{
           backgroundColor: "#F5F5F5",
           color: "#001E47",
@@ -93,7 +100,9 @@ export default function Home() {
         }}
       >
         <h2 className="text-lg font-semibold mb-4">Svar:</h2>
-        {response ? (
+        {loading ? (
+          <p className="text-xl">Bearbetar ditt svar...</p> // Show loading message
+        ) : response ? (
           <div className="text-base leading-relaxed">
             {response.split("\n").map((line, index) => {
               if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.") || line.startsWith("4.") || line.startsWith("5.")) {
