@@ -1,15 +1,29 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import config from "../config"; // Import the configuration file
 
 export default function Home() {
   const [chatInput, setChatInput] = useState("");
   const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false); // State to track loading status
+  const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false); // Track if the user is authenticated
+  const [password, setPassword] = useState(""); // Track the entered password
+  const [error, setError] = useState(""); // Track authentication errors
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === config.PASSWORD) {
+      setAuthenticated(true);
+      setError("");
+    } else {
+      setError("Fel lösenord. Försök igen."); // Incorrect password message
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when the request starts
+    setLoading(true);
 
     try {
       const res = await fetch(
@@ -33,14 +47,50 @@ export default function Home() {
     } catch {
       setResponse("Error: Something went wrong.");
     } finally {
-      setLoading(false); // Set loading to false when the request completes
+      setLoading(false);
     }
   };
+
+  if (!authenticated) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center p-8 sm:p-20"
+        style={{ backgroundColor: "#f4ede7", color: "#222222" }}
+      >
+        <h1 className="text-4xl font-bold mb-8">Fråga Oskar</h1>
+        <form
+          onSubmit={handlePasswordSubmit}
+          className="w-full max-w-md flex flex-col gap-4"
+        >
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Ange lösenord"
+            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{
+              backgroundColor: "#FFFFFF",
+              color: "#001E47",
+              borderColor: "#005BAC",
+            }}
+            required
+          />
+          <button
+            type="submit"
+            className="w-full py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+          >
+            Logga in
+          </button>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-8 sm:p-20"
-      style={{ backgroundColor: "#f4ede7", color: "#222222" }} // Consid color theme
+      style={{ backgroundColor: "#f4ede7", color: "#222222" }}
     >
       <svg width="128" height="32" viewBox="0 0 128 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_22_112)">
@@ -76,7 +126,7 @@ export default function Home() {
             borderColor: "#005BAC",
           }}
           required
-          disabled={loading} // Disable input while loading
+          disabled={loading}
         />
         <button
           type="submit"
@@ -86,7 +136,7 @@ export default function Home() {
           style={{
             color: "#FFFFFF",
           }}
-          disabled={loading} // Disable button while loading
+          disabled={loading}
         >
           {loading ? "Skickar..." : "Skicka"}
         </button>
@@ -101,7 +151,7 @@ export default function Home() {
       >
         <h2 className="text-lg font-semibold mb-4">Svar:</h2>
         {loading ? (
-          <p className="text-xl">Bearbetar ditt svar...</p> // Show loading message
+          <p className="text-xl">Bearbetar ditt svar...</p>
         ) : response ? (
           <div className="text-base leading-relaxed">
             {response.split("\n").map((line, index) => {
