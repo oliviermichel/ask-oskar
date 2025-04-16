@@ -1,103 +1,122 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [chatInput, setChatInput] = useState("");
+  const [response, setResponse] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(
+        "https://oliviermichel.app.n8n.cloud/webhook/bf4dd093-bb02-472c-9454-7ab9af97bd1d",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "bearer Cons1d!Ask!Oskar",
+          },
+          body: JSON.stringify({ chatInput }),
+        }
+      );
+
+      if (res.ok) {
+        const data = await res.json();
+        setResponse(data.output || "Response received successfully!");
+      } else {
+        setResponse("Error: Unable to fetch response.");
+      }
+    } catch {
+      setResponse("Error: Something went wrong.");
+    }
+  };
+
+  return (
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-8 sm:p-20"
+      style={{ backgroundColor: "#f4ede7", color: "#222222" }} // Consid color theme
+    >
+      <svg width="128" height="32" viewBox="0 0 128 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clipPath="url(#clip0_22_112)">
+          {/* SVG paths */}
+        </g>
+        <defs>
+          <clipPath id="clip0_22_112">
+            <rect width="127.108" height="32" fill="white"></rect>
+          </clipPath>
+        </defs>
+      </svg>
+      <h1 className="text-4xl font-bold mb-8">Fråga Oskar</h1>
+      <Image
+        src="/oskar.jpeg"
+        alt="Profile picture"
+        className="mb-8 rounded-lg"
+        width={200}
+        height={200}
+      />
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md flex flex-col gap-4"
+      >
+        <input
+          type="text"
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          placeholder="Skriv din fråga här..."
+          className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={{
+            backgroundColor: "#FFFFFF",
+            color: "#001E47",
+            borderColor: "#005BAC",
+          }}
+          required
+        />
+        <button
+          type="submit"
+          className="w-full py-2 rounded transition"
+          style={{
+            backgroundColor: "#005BAC",
+            color: "#FFFFFF",
+          }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Skicka
+        </button>
+      </form>
+      <div
+        className="mt-8 w-3/4 p-4 rounded" // Adjusted width to 75% of the screen
+        style={{
+          backgroundColor: "#F5F5F5",
+          color: "#001E47",
+          border: "1px solid #005BAC",
+        }}
+      >
+        <h2 className="text-lg font-semibold mb-4">Svar:</h2>
+        {response ? (
+          <div className="text-base leading-relaxed">
+            {response.split("\n").map((line, index) => {
+              if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.") || line.startsWith("4.") || line.startsWith("5.")) {
+                return (
+                  <p key={index} className="mt-2">
+                    <strong>{line}</strong>
+                  </p>
+                );
+              } else if (line.startsWith("-")) {
+                return (
+                  <ul key={index} className="list-disc list-inside ml-4">
+                    <li>{line.slice(1).trim()}</li>
+                  </ul>
+                );
+              } else {
+                return <p key={index}>{line}</p>;
+              }
+            })}
+          </div>
+        ) : (
+          <p className="text-xl">Inget svar ännu.</p>
+        )}
+      </div>
     </div>
   );
 }
