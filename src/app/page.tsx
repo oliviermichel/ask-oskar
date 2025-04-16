@@ -62,7 +62,7 @@ export default function Home() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ange lösenord"
+            placeholder="Ange lösenord för att se appen"
             className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             style={{
               backgroundColor: "#FFFFFF",
