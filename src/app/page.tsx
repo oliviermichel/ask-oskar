@@ -151,21 +151,28 @@ export default function Home() {
         ) : response ? (
           <div className="text-base leading-relaxed">
             {response.split("\n").map((line, index) => {
-              if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.") || line.startsWith("4.") || line.startsWith("5.")) {
+              // Handle numbered points
+              if (line.match(/^\d+\.\s/)) {
+                const [boldText, ...rest] = line.split(":");
                 return (
                   <p key={index} className="mt-2">
-                    <strong>{line}</strong>
+                    <strong>{boldText.trim()}</strong>: {rest.join(":").trim()}
                   </p>
                 );
-              } else if (line.startsWith("-")) {
+              }
+              // Handle bullet points
+              else if (line.startsWith("-")) {
                 return (
                   <ul key={index} className="list-disc list-inside ml-4">
                     <li>{line.slice(1).trim()}</li>
                   </ul>
                 );
-              } else {
+              }
+              // Handle regular text
+              else if (line.trim() !== "") {
                 return <p key={index}>{line}</p>;
               }
+              return null; // Skip empty lines
             })}
           </div>
         ) : (
