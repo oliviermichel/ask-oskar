@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import config from "../config"; // Import the configuration file
 
 export default function Home() {
   const [chatInput, setChatInput] = useState("");
@@ -13,7 +12,7 @@ export default function Home() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === config.PASSWORD) {
+    if (password === process.env.NEXT_PUBLIC_PASSWORD) {
       setAuthenticated(true);
       setError("");
     } else {
@@ -26,17 +25,14 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "https://oliviermichel.app.n8n.cloud/webhook/bf4dd093-bb02-472c-9454-7ab9af97bd1d",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "bearer Cons1d!Ask!Oskar",
-          },
-          body: JSON.stringify({ chatInput }),
-        }
-      );
+      const res = await fetch(process.env.NEXT_PUBLIC_WEBHOOK_URL || "", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": process.env.NEXT_PUBLIC_BEARER_TOKEN || "",
+        },
+        body: JSON.stringify({ chatInput }),
+      });
 
       if (res.ok) {
         const data = await res.json();
@@ -118,7 +114,7 @@ export default function Home() {
           type="text"
           value={chatInput}
           onChange={(e) => setChatInput(e.target.value)}
-          placeholder="Skriv din fråga här..."
+          placeholder="Skriv din fråga om Consid här..."
           className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           style={{
             backgroundColor: "#FFFFFF",
