@@ -196,7 +196,7 @@ export default function Home() {
                 const [boldText, ...rest] = line.split(":");
                 return (
                   <p key={index} className="mt-2">
-                    <strong>{boldText.trim()}</strong>: {rest.join(":").trim()}
+                    <strong>{boldText.trim().replace(/\*\*/g, "")}</strong>: {rest.join(":").trim()}
                   </p>
                 );
               }
@@ -226,6 +226,23 @@ export default function Home() {
                       >
                         {title}
                       </a>
+                    </p>
+                  );
+                }
+              }
+              // Handle bold text
+              else if (line.includes("**")) {
+                const boldRegex = /\*\*(.*?)\*\*/;
+                const match = line.match(boldRegex);
+                if (match) {
+                  const [_, boldText] = match;
+                  const beforeBold = line.split(match[0])[0]; // Text before the bold text
+                  const afterBold = line.split(match[0])[1]; // Text after the bold text
+                  return (
+                    <p key={index}>
+                      {beforeBold}
+                      <strong>{boldText}</strong>
+                      {afterBold}
                     </p>
                   );
                 }
