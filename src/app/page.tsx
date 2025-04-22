@@ -214,8 +214,10 @@ export default function Home() {
                 const match = line.match(linkRegex);
                 if (match) {
                   const [_, title, url] = match;
+                  const beforeLink = line.split(match[0])[0]; // Text before the link
                   return (
                     <p key={index}>
+                      {beforeLink}
                       <a
                         href={url}
                         target="_blank"
