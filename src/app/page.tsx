@@ -208,6 +208,26 @@ export default function Home() {
                   </ul>
                 );
               }
+              // Handle links
+              else if (line.match(/\[.*?\]\(.*?\)/)) {
+                const linkRegex = /\[(.*?)\]\((.*?)\)/;
+                const match = line.match(linkRegex);
+                if (match) {
+                  const [_, title, url] = match;
+                  return (
+                    <p key={index}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline"
+                      >
+                        {title}
+                      </a>
+                    </p>
+                  );
+                }
+              }
               // Handle regular text
               else if (line.trim() !== "") {
                 return <p key={index}>{line}</p>;
